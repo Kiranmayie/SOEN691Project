@@ -65,6 +65,17 @@ public class RuntimeandNonRuntimeExceptionCallers {
 		return exceptions;
 	}
 	
+	private static String getJavaDocument(IMember iMember) throws JavaModelException {
+		ISourceRange iSourceRange = iMember.getJavadocRange();
+		String Text = iMember.getOpenable().getBuffer().getText(iSourceRange.getOffset(), iSourceRange.getLength());
+		Text = Text.replaceAll("^/[*][*][ \t]*\n?", "")
+					.replaceAll("\n?[ \t]*[*]/$", "") .replaceAll("^\\s*[*]", "\n")
+					.replaceAll("\n\\s*[*]", "\n").replaceAll("<[^>]*>", "")
+					.replaceAll("[{]@code([^}]*)[}]", "$1").replaceAll("&nbsp;", " ")
+					.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&quot;", "\"");
+		return Text;
+	}
+	
 	
 
 	
