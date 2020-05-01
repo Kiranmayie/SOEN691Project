@@ -76,7 +76,33 @@ public class RuntimeandNonRuntimeExceptionCallers {
 		return Text;
 	}
 	
+	public static ArrayList<String> FindRuntimeExceptions(MethodInvocation methodInvocation) throws JavaModelException {
+		IMethodBinding iMethodBinding = methodInvocation.resolveMethodBinding().getMethodDeclaration();
+		ArrayList<String> list = new ArrayList<>();
+		ISourceRange iSourceRange = ((IMethod) iMethodBinding.getJavaElement()).getJavadocRange();
+		if (iSourceRange != null) {
+			String temp = getJavaDocument((IMethod) iMethodBinding.getJavaElement());
+			list.addAll(FindExceptionsInJavadoc(temp));
+		}
+		return list;
+
+	}
 	
+	public static ArrayList<String> FindNonRuntimeExceptions(IMethodBinding imb) throws JavaModelException {
+		ArrayList<String> exceptions = new ArrayList<>();
+		for(ITypeBinding i:imb.getExceptionTypes()) {
+			String name = i.getQualifiedName();
+			if(name.contains(".")) {
+				int j = name.lastIndexOf(".");
+				String name1 = name.substring(j+1, name.length());
+				exceptions.add(name1);
+
+			}
+			else
+				exceptions.add(name);
+		}
+		return exceptions;
+	}
 
 	
 
