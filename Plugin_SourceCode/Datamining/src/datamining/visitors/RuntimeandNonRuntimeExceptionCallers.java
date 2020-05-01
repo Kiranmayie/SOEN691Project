@@ -48,7 +48,25 @@ public class RuntimeandNonRuntimeExceptionCallers {
 		}
 		return exceptionList;
 	}
+	public static ArrayList<String> FindNonRuntimeExceptions(MethodInvocation methodInvocation) throws JavaModelException {
+		IMethodBinding iMethodBinding = methodInvocation.resolveMethodBinding().getMethodDeclaration();
+		ArrayList<String> exceptions = new ArrayList<>();
+		for(ITypeBinding i:iMethodBinding.getExceptionTypes()) {
+			String name = i.getQualifiedName();
+			if(name.contains(".")) {
+				int j = name.lastIndexOf(".");
+				String name1 = name.substring(j+1, name.length());
+				exceptions.add(name1);
+
+			}
+			else
+				exceptions.add(name);
+		}
+		return exceptions;
+	}
 	
+	
+
 	
 
 }
