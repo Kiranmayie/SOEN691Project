@@ -54,7 +54,38 @@ public class VisitorOfThrowsStatement extends ASTVisitor {
 		return (MethodDeclaration) findParentMethodDeclaration(node);
 	}
 	
-	
+	public void findThrowsKitchenSink(MethodDeclaration node) {
+		List<Name> l = node.thrownExceptions();
+		int lssize = l.size();
+		if(lssize>1)
+		{
+			numberOfThrowsKitchenSinkAP++;
+			ExceptionFinder.stringbuilttxt.append("\n ***************ANTI-PATTERN : Throws Kitchen Sink***************");
+			ExceptionFinder.stringbuilttxt.append("\n FILE NAME : " + fl.getAbsolutePath());
+			ExceptionFinder.stringbuilttxt.append("\n Method : " + node);
+			ExceptionFinder.stringbuilttxt.append("\n_________________________________________________________________________________\n");
+		}
+	}
+	public void findThrowsGeneric(MethodDeclaration node) {
+		boolean throwsGenericeFlag = false;
+		List<Name> l = node.thrownExceptions();
+		int lssize = l.size();
+		for(int i=0;i<lssize;i++){
+			Expression e = (Expression)l.get(i);
+			if(e.toString().trim().equals(new String("Exception"))){
+				throwsGenericeFlag=true;
+			}
+		}
+		if(throwsGenericeFlag)
+		{
+			numberOfThrowsGenericAP++;
+			ExceptionFinder.stringbuilttxt.append("\n ***************ANTI-PATTERN : Throws Generic***************");
+			ExceptionFinder.stringbuilttxt.append("\n FILE NAME : " + fl.getAbsolutePath());
+			ExceptionFinder.stringbuilttxt.append("\n Method  : " + node);
+			ExceptionFinder.stringbuilttxt.append("\n_________________________________________________________________________________\n");
+		}
+
+	}
 
 
 
