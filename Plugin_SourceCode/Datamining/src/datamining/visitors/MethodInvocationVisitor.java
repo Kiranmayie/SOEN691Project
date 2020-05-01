@@ -82,7 +82,87 @@ public class MethodInvocationVisitor extends ASTVisitor{
 		IMethodBinding iMethodBinding;
 		IPackageBinding iPackageBinding;
 		
+		try {
+	
+			iTypeBinding = node.resolveMethodBinding().getDeclaringClass();
+			 iMethodBinding = node.resolveMethodBinding().getMethodDeclaration();
+			 iPackageBinding =	node.resolveMethodBinding().getMethodDeclaration().getDeclaringClass().getPackage();
+			
+		}
+		catch (Exception e) {
+			return super.visit(node);
+		}
+		String classCalled = iTypeBinding.getName();
+		String methodCalled = iMethodBinding.toString();
+		String packagesCalled = iPackageBinding.getName();
+		Node calledNode = new Node(methodCalled, classCalled, packagesCalled);
+		ASTNode astNode = node;
+		MethodDeclaration methodDeclarationCall = null ;
+		while(true) {
+			if(astNode instanceof MethodDeclaration) {
+				methodDeclarationCall = (MethodDeclaration)astNode;
+				break;
+			}
+			else if(astNode instanceof TypeDeclaration) {
+				return super.visit(node);//to check
+			}		
+			try {
+				astNode = astNode.getParent();
+			}
+			catch (Exception ex) {
+				return super.visit(node);//to check
+			}
+			
+
+		}
 		
+		
+		IMethodBinding bindingForCall = methodDeclarationCall.resolveBinding();
+		ITypeBinding itbCall = methodDeclarationCall.resolveBinding().getDeclaringClass();
+		IPackageBinding ipbCall = methodDeclarationCall.resolveBinding().getDeclaringClass().getPackage();
+		
+		String classNameCall = itbCall.getName();
+		String methodNameCall = bindingForCall.toString();
+		String packageNameCall = ipbCall.getName();
+		Node nodeCall = new Node(methodNameCall, classNameCall, packageNameCall);
+
+		
+		if(ExceptionFinder.CallGraph.containsKey(nodeCall)) {
+			Set<Node> adjCall = new HashSet<Node>();
+			adjCall = ExceptionFinder.CallGraph.get(nodeCall);
+			adjCall.add(calledNode);
+			ExceptionFinder.CallGraph.put(nodeCall, adjCall);
+			
+		}
+		else {
+			Set<Node> adjCall = new HashSet<Node>();
+			adjCall.add(calledNode);
+			ExceptionFinder.CallGraph.put(nodeCall, adjCall);
+		}
+		
+
+		if(!ExceptionFinder.CallGraph.containsKey(calledNode)) {
+			Set<Node> adjCall = new HashSet<Node>();
+			ExceptionFinder.CallGraph.put(calledNode, adjCall);
+			
+		}
+
+		Set<String> setExceptionCall = new HashSet<String>();
+		Set<String> setExceptionCalled = new HashSet<String>();
+		try {
+			setExceptionCall.addAll(RuntimeandNonRuntimeExceptionCallers.FindNonRuntimeExceptions(bindingForCall));
+			setExceptionCall.addAll(RuntimeandNonRuntimeExceptionCallers.FindRuntimeExceptions(bindingForCall));
+			
+			setExceptionCalled.addAll(RuntimeandNonRuntimeExceptionCallers.FindNonRuntimeExceptions(iMethodBinding));
+			setExceptionCalled.addAll(RuntimeandNonRuntimeExceptionCallers.FindRuntimeExceptions(iMethodBinding));
+			
+		}
+		catch(JavaModelException ex) {
+			
+		}
+
+		
+	
 	
 	
 }
