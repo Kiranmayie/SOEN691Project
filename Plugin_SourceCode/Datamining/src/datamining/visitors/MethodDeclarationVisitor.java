@@ -19,5 +19,18 @@ public class MethodDeclarationVisitor extends ASTVisitor{
 		return suspectMethodsCaller;
 	}
 	
+	@Override
+	public boolean visit(MethodDeclaration node) {
+		
+		MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor(declarationSuspect);
+		node.accept(methodInvocationVisitor);
+		
+		if(!methodInvocationVisitor.getSuspectInvocations().isEmpty()) {
+			suspectMethodsCaller.add(node);
+			declarationSuspect.add(node);
+		}
+		
+		return super.visit(node);
+	}
 	
 }
