@@ -187,7 +187,29 @@ public class MethodInvocationVisitor extends ASTVisitor{
 		
 		Set<Node> calledNodeSet = new HashSet<Node>();
 		
+		calledNodeSet = ExceptionFinder.CallGraph.get(calledNode);
+		if(calledNodeSet == null) {
+			calledNodeSet = new HashSet<Node>();
+			calledNodeSet.add(calledNode);
+		}
+		else {
+			calledNodeSet.add(calledNode);
+		}
+
 		
+		
+		Set<String> exceptionSet = new HashSet<String>();
+		for(Node temp:calledNodeSet) {
+			if(ExceptionFinder.ExceptionMap.get(temp)!=null) {
+				exceptionSet.addAll(ExceptionFinder.ExceptionMap.get(temp));
+			}
+		}
+
+		TryStatementVisitor.exceptionSetfromTry.addAll(exceptionSet);
+		
+		
+		return super.visit(node);
+	}
 	
 	
 	
