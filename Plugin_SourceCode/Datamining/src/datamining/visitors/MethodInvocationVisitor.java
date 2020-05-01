@@ -47,7 +47,42 @@ public class MethodInvocationVisitor extends ASTVisitor{
 	}
 	
 	
-	
+	@Override
+	public boolean visit(MethodInvocation node) {
+		if (node == null) {
+			return super.visit(node);
+		}
+		IMethodBinding declarationLinked;
+		
+		try {
+		declarationLinked = node.resolveMethodBinding().getMethodDeclaration();
+		}
+		catch (Exception e) {
+			return super.visit(node);
+		}
+		
+				ITypeBinding[] typesException = declarationLinked.getExceptionTypes();
+				for (int i = 0; i < typesException.length; i++) {
+					namesOfException.add(typesException[i].getBinaryName());
+					namesOfClass.add(typesException[i].getClass());
+				}
+				nameOfFunction.add(node.getName().toString());
+				
+		
+		for(MethodDeclaration suspectDeclaration: declarationSuspect) {
+			
+			if(suspectDeclaration.resolveBinding().getMethodDeclaration().isEqualTo(declarationLinked)) {
+				invocationSuspect.add(node);
+			}
+			
+		}
+		
+		ArrayList<String> exceptionList = new ArrayList<String>();
+		ITypeBinding iTypeBinding ;
+		IMethodBinding iMethodBinding;
+		IPackageBinding iPackageBinding;
+		
+		
 	
 	
 }
